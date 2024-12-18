@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+TrabalhoOTM/**
+!TrabalhoOTM/main.cpp
+!TrabalhoOTM/head.h
