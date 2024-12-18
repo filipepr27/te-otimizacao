@@ -1,5 +1,6 @@
 #include "ilcplex\cplex.h"
 #include "ilcplex\ilocplex.h"
+#include "gurobi_c++.h"
 #include <iostream>
 #include <stdio.h>
 #include <memory.h>
@@ -11,10 +12,12 @@
 #define PATH_MODEL "..\\model\\"
 #define PATH_INSTANCES "..\\instancias\\"
 #define PATH_SOLUTIONS_CPLEX "..\\solucoes\\cplex\\"
+#define PATH_SOLUTIONS_GUROBI "..\\solucoes\\gurobi\\"
 #define FILE_LP ".lp"
 #define FILE_TXT ".txt"
+#define FILE_SOL ".sol"
 
-#define INSTANCE "PSC1-C1-50"
+#define INSTANCE "PSC1-C1-100"
 
 
 int main() {
@@ -27,6 +30,7 @@ int main() {
     criar_modelo_cplex(path_model);
 
     cplex(path_model);
+    gurobi(path_model);
     
     return 0;
 }
@@ -54,19 +58,18 @@ void cplex(const char* path_model) {
     tempo_decorrido = 0;
 
     if (cplex.solve()) {
+        fim = clock() - inicio;
+        tempo_decorrido = (double)fim / CLOCKS_PER_SEC;
 
         printf("Solucao encontrada\n");
         printf("FO: %f\n", cplex.getObjValue());
         printf("Lower bound: %f\n", cplex.getBestObjValue());
         printf("Gap relativo (%): %f\n", cplex.getMIPRelativeGap() * 100);
-
-        fim = clock() - inicio;
-        tempo_decorrido = (double)fim / CLOCKS_PER_SEC;
         printf("Tempo de execucao (s): %f\n", tempo_decorrido);
 
-        const char* path_solution_cplex = PATH_SOLUTIONS_CPLEX INSTANCE FILE_TXT;
-        cplex.writeSolution(path_solution_cplex);
-        printf("Solicao salva em %s", path_solution_cplex);
+        const char* path_solution = PATH_SOLUTIONS_CPLEX INSTANCE FILE_SOL;
+        cplex.writeSolution(path_solution);
+        printf("Solicao salva em %s", path_solution);
     }
     else {
         printf("Não foi possivel encontrar uma solucao\n");
@@ -74,6 +77,36 @@ void cplex(const char* path_model) {
 
     env.end();
 
+}
+
+void gurobi(const char* path_model) {
+
+    GRBEnv env = GRBEnv(true);
+    env.set("LogFile", "gurobi.log");
+    env.start();
+
+    GRBModel model = GRBModel(env, path_model);
+
+    model.set(GRB_DoubleParam_TimeLimit, TEMP_EXECUCAO);
+
+    clock_t inicio, fim;
+    double tempo_decorrido;
+    inicio = clock();
+    tempo_decorrido = 0;
+
+    model.optimize();
+
+    fim = clock() - inicio;
+    tempo_decorrido = (double)fim / CLOCKS_PER_SEC;
+    printf("Solucao encontrada\n");
+    printf("FO: %f\n", model.get(GRB_DoubleAttr_ObjVal));
+    printf("Lower bound: %f\n", model.get(GRB_DoubleAttr_ObjBound));
+    printf("Gap relativo (%): %f\n", model.get(GRB_DoubleAttr_MIPGap) * 100);
+    printf("Tempo de execucao (s): %f\n", tempo_decorrido);
+
+    const char* path_solution = PATH_SOLUTIONS_GUROBI INSTANCE FILE_SOL;
+    model.write(path_solution);
+    printf("Solicao salva em %s", path_solution);
 }
 
 void ler_instancia_arquivo(const char* path)

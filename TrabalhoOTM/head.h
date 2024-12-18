@@ -20,4 +20,5 @@ int CUSTO_TRANSP_DEPOSITO_CLIENTE[MAX_DEPOSITOS][MAX_CLIENTES];
 void ler_instancia_arquivo(const char* path);
 void criar_modelo_cplex(const char* path);
 void escrever_instancia();
-void cplex(const char* path);
+void cplex(const char* path_model);
+void gurobi(const char* path_model);
