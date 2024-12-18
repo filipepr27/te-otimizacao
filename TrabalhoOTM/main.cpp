@@ -14,7 +14,7 @@
 #define FILE_LP ".lp"
 #define FILE_TXT ".txt"
 
-#define INSTANCE "PSC1-C2-50"
+#define INSTANCE "PSC1-C1-50"
 
 
 int main() {

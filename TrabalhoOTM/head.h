@@ -15,7 +15,7 @@ int CAPACIDADE_DEPOSITO[MAX_DEPOSITOS];
 int CUSTO_TRANSP_FABRICA_DEPOSITO[MAX_FABRICAS][MAX_DEPOSITOS];
 int CUSTO_TRANSP_DEPOSITO_CLIENTE[MAX_DEPOSITOS][MAX_CLIENTES];
 
-// FUNÇÕES
+// FUNÇÕESSS
 
 void ler_instancia_arquivo(const char* path);
 void criar_modelo_cplex(const char* path);

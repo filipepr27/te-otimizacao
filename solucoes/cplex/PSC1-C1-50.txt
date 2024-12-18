@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding="UTF-8" standalone="yes"?>
 <CPLEXSolution version="1.2">
  <header
-   problemName="..\model\cplex\PSC1-C1-50.lp"
+   problemName="..\model\PSC1-C1-50.lp"
    solutionName="incumbent"
    solutionIndex="-1"
    objectiveValue="722178"
