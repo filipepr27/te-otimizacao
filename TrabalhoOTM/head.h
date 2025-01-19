@@ -22,3 +22,4 @@ void criar_modelo_cplex(const char* path);
 void escrever_instancia();
 void cplex(const char* path_model);
 void gurobi(const char* path_model);
+void escrever_solucao_arquivo(const char* path, double LB, double UB, double gap, double tempo);

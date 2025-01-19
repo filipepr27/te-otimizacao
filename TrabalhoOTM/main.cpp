@@ -17,7 +17,7 @@
 #define FILE_TXT ".txt"
 #define FILE_SOL ".sol"
 
-#define INSTANCE "PSC1-C1-100"
+#define INSTANCE "dificil-PSC5-C5-100"
 
 
 int main() {
@@ -67,9 +67,17 @@ void cplex(const char* path_model) {
         printf("Gap relativo (%): %f\n", cplex.getMIPRelativeGap() * 100);
         printf("Tempo de execucao (s): %f\n", tempo_decorrido);
 
+
+
         const char* path_solution = PATH_SOLUTIONS_CPLEX INSTANCE FILE_SOL;
         cplex.writeSolution(path_solution);
-        printf("Solicao salva em %s", path_solution);
+        printf("Solucao salva em %s", path_solution);
+
+        const char* path_resultados = PATH_SOLUTIONS_CPLEX INSTANCE FILE_TXT;
+        escrever_solucao_arquivo(path_resultados, cplex.getBestObjValue(), cplex.getObjValue(), cplex.getMIPRelativeGap() * 100, tempo_decorrido);
+
+        printf("Resultado salvo em %s", path_resultados);
+
     }
     else {
         printf("Não foi possivel encontrar uma solucao\n");
@@ -106,7 +114,12 @@ void gurobi(const char* path_model) {
 
     const char* path_solution = PATH_SOLUTIONS_GUROBI INSTANCE FILE_SOL;
     model.write(path_solution);
-    printf("Solicao salva em %s", path_solution);
+    printf("Solucao salva em %s", path_solution);
+
+    const char* path_resultados = PATH_SOLUTIONS_GUROBI INSTANCE FILE_TXT;
+    escrever_solucao_arquivo(path_resultados, model.get(GRB_DoubleAttr_ObjBound), model.get(GRB_DoubleAttr_ObjVal), model.get(GRB_DoubleAttr_MIPGap) * 100, tempo_decorrido);
+
+    printf("Resultado salvo em %s", path_resultados);
 }
 
 void ler_instancia_arquivo(const char* path)
@@ -333,4 +346,20 @@ void escrever_instancia() {
         }
     }
     printf("\n");
+}
+
+void escrever_solucao_arquivo(const char* path, double LB, double UB, double gap, double tempo) {
+    
+    FILE* f = nullptr;
+    if (fopen_s(&f, path, "w") != 0) {
+        printf("Erro ao abrir o arquivo: %s\n", path);
+        return;
+    }
+
+    fprintf(f, "LB: %f\n", LB);
+    fprintf(f, "UB: %f\n", UB);
+    fprintf(f, "Gap (%): %f\n", gap);
+    fprintf(f, "Tempo (s): %f\n", tempo);
+
+    fclose(f);
 }
